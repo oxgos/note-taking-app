@@ -1,0 +1,168 @@
+import App from './app';
+import { Note } from './interfaces/note';
+
+type onNoteSelectFn = ReturnType<App['_handlers']>['onNoteSelect'];
+type onNoteAddFn = ReturnType<App['_handlers']>['onNoteAdd'];
+type onNoteEditFn = ReturnType<App['_handlers']>['onNoteEdit'];
+type onNoteDeleteFn = ReturnType<App['_handlers']>['onNoteDelete'];
+
+function noop() {}
+
+export default class NotesView {
+  root: HTMLDivElement;
+  onNoteSelect: onNoteSelectFn;
+  onNoteAdd: onNoteAddFn;
+  onNoteEdit: onNoteEditFn;
+  onNoteDelete: onNoteDeleteFn;
+
+  constructor(
+    root: HTMLDivElement,
+    {
+      onNoteSelect,
+      onNoteAdd,
+      onNoteEdit,
+      onNoteDelete
+    }: {
+      onNoteSelect?: onNoteSelectFn;
+      onNoteAdd?: onNoteAddFn;
+      onNoteEdit?: onNoteEditFn;
+      onNoteDelete?: onNoteDeleteFn;
+    } = {}
+  ) {
+    this.root = root;
+    this.onNoteSelect = onNoteSelect || noop;
+    this.onNoteAdd = onNoteAdd || noop;
+    this.onNoteEdit = onNoteEdit || noop;
+    this.onNoteDelete = onNoteDelete || noop;
+    this.root.innerHTML = `
+          <div class="notes__sidebar">
+              <button class="notes__add" type="button">添加新的笔记 📒</button>
+              <div class="notes__list"></div>
+          </div>
+          <div class="notes__preview">
+              <input class="notes__title" type="text" placeholder="新笔记...">
+              <textarea class="notes__body">编辑笔记...</textarea>
+          </div>
+      `;
+
+    const btnAddNote = this.root.querySelector(
+      '.notes__add'
+    ) as HTMLButtonElement;
+    const inpTitle = this.root.querySelector(
+      '.notes__title'
+    ) as HTMLInputElement;
+    const inpBody = this.root.querySelector(
+      '.notes__body'
+    ) as HTMLTextAreaElement;
+
+    btnAddNote.addEventListener('click', () => {
+      this.onNoteAdd();
+    });
+
+    [inpTitle, inpBody].forEach((inputField) => {
+      inputField.addEventListener('blur', () => {
+        const updatedTitle = inpTitle.value.trim();
+        const updatedBody = inpBody.value.trim();
+
+        this.onNoteEdit(updatedTitle, updatedBody);
+      });
+    });
+
+    this.updateNotePreviewVisibility(false);
+  }
+
+  _createListItemHTML(
+    id: Note['id'],
+    title: Note['title'],
+    body: Note['body'],
+    updated: Note['updated']
+  ) {
+    const MAX_BODY_LENGTH = 60;
+
+    return `
+          <div class="notes__list-item" data-note-id="${id}">
+              <div class="notes__small-title">${title}</div>
+              <div class="notes__small-body">
+                  ${body.substring(0, MAX_BODY_LENGTH)}
+                  ${body.length > MAX_BODY_LENGTH ? '...' : ''}
+              </div>
+              <div class="notes__small-updated">
+                  ${new Date(updated).toLocaleString(undefined, {
+                    dateStyle: 'full',
+                    timeStyle: 'short'
+                  })}
+              </div>
+          </div>
+      `;
+  }
+
+  updateNoteList(notes: Note[]) {
+    const notesListContainer = this.root.querySelector(
+      '.notes__list'
+    ) as HTMLDivElement;
+
+    // Empty list
+    notesListContainer.innerHTML = '';
+
+    for (const note of notes) {
+      const html = this._createListItemHTML(
+        note.id,
+        note.title,
+        note.body,
+        note.updated
+      );
+
+      notesListContainer.insertAdjacentHTML('beforeend', html);
+    }
+
+    // Add select/delete events for each list item
+    (
+      notesListContainer.querySelectorAll(
+        '.notes__list-item'
+      ) as NodeListOf<HTMLDivElement>
+    ).forEach((noteListItem) => {
+      noteListItem.addEventListener('click', () => {
+        if (noteListItem.dataset.noteId) {
+          this.onNoteSelect(parseInt(noteListItem.dataset.noteId));
+        }
+      });
+
+      noteListItem.addEventListener('dblclick', () => {
+        const doDelete = confirm('确认要删除该笔记吗?');
+
+        if (doDelete) {
+          if (noteListItem.dataset.noteId) {
+            this.onNoteDelete(parseInt(noteListItem.dataset.noteId));
+          }
+        }
+      });
+    });
+  }
+
+  updateActiveNote(note: Note) {
+    (this.root.querySelector('.notes__title') as HTMLInputElement).value =
+      note.title;
+    (this.root.querySelector('.notes__body') as HTMLTextAreaElement).value =
+      note.body;
+
+    (
+      this.root.querySelectorAll(
+        '.notes__list-item'
+      ) as NodeListOf<HTMLDivElement>
+    ).forEach((noteListItem) => {
+      noteListItem.classList.remove('notes__list-item--selected');
+    });
+
+    (
+      this.root.querySelector(
+        `.notes__list-item[data-note-id="${note.id}"]`
+      ) as HTMLDivElement
+    ).classList.add('notes__list-item--selected');
+  }
+
+  updateNotePreviewVisibility(visible: boolean) {
+    (
+      this.root.querySelector('.notes__preview') as HTMLDivElement
+    ).style.visibility = visible ? 'visible' : 'hidden';
+  }
+}
