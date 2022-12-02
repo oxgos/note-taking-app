@@ -5,6 +5,8 @@ type onNoteSelectFn = ReturnType<App['_handlers']>['onNoteSelect'];
 type onNoteAddFn = ReturnType<App['_handlers']>['onNoteAdd'];
 type onNoteEditFn = ReturnType<App['_handlers']>['onNoteEdit'];
 type onNoteDeleteFn = ReturnType<App['_handlers']>['onNoteDelete'];
+type onNoteImportFn = ReturnType<App['_handlers']>['onNoteImport'];
+type onNoteExportFn = ReturnType<App['_handlers']>['onNoteExport'];
 
 function noop() {}
 
@@ -14,6 +16,8 @@ export default class NotesView {
   onNoteAdd: onNoteAddFn;
   onNoteEdit: onNoteEditFn;
   onNoteDelete: onNoteDeleteFn;
+  onNoteImport: onNoteImportFn;
+  onNoteExport: onNoteExportFn;
 
   constructor(
     root: HTMLDivElement,
@@ -21,22 +25,36 @@ export default class NotesView {
       onNoteSelect,
       onNoteAdd,
       onNoteEdit,
-      onNoteDelete
+      onNoteDelete,
+      onNoteImport,
+      onNoteExport
     }: {
       onNoteSelect?: onNoteSelectFn;
       onNoteAdd?: onNoteAddFn;
       onNoteEdit?: onNoteEditFn;
       onNoteDelete?: onNoteDeleteFn;
+      onNoteImport?: onNoteImportFn;
+      onNoteExport?: onNoteExportFn;
     } = {}
   ) {
+    const self = this;
     this.root = root;
     this.onNoteSelect = onNoteSelect || noop;
     this.onNoteAdd = onNoteAdd || noop;
     this.onNoteEdit = onNoteEdit || noop;
     this.onNoteDelete = onNoteDelete || noop;
+    this.onNoteImport = onNoteImport || noop;
+    this.onNoteExport = onNoteExport || noop;
     this.root.innerHTML = `
           <div class="notes__sidebar">
               <button class="notes__add" type="button">添加新的笔记 📒</button>
+              <div class="notes__plus__btns">
+                <div class="notes__import__Btn">
+                  <input class="notes__import__input" type="file"></button>
+                  批量导入
+                </div>
+                <button class="notes__export">批量导出</button>
+              </div>
               <div class="notes__list"></div>
           </div>
           <div class="notes__preview">
@@ -52,6 +70,12 @@ export default class NotesView {
     const btnAddNote = this.root.querySelector(
       '.notes__add'
     ) as HTMLButtonElement;
+    const btnImportNote = this.root.querySelector(
+      '.notes__import__input'
+    ) as HTMLInputElement;
+    const btnExportNote = this.root.querySelector(
+      '.notes__export'
+    ) as HTMLInputElement;
     const btnSaveNote = this.root.querySelector(
       '.notes__save'
     ) as HTMLButtonElement;
@@ -67,6 +91,24 @@ export default class NotesView {
 
     btnAddNote.addEventListener('click', () => {
       this.onNoteAdd();
+    });
+    btnExportNote.addEventListener('click', () => {
+      this.onNoteExport();
+    });
+    btnImportNote.addEventListener('change', () => {
+      const file = btnImportNote.files?.[0];
+      const reader = new FileReader();
+      reader.onload = function fileReadCompleted() {
+        if (reader.result) {
+          console.log(typeof reader.result);
+          self.onNoteImport(reader.result as string);
+          btnImportNote.value = '';
+          alert('导入成功');
+        }
+      };
+      if (file) {
+        reader.readAsText(file);
+      }
     });
     btnSaveNote.addEventListener('click', () => {
       const updatedTitle = inpTitle.value.trim();

@@ -54,6 +54,13 @@ export default class App {
         NotesAPI.saveNote(newNote as Note);
         this._refreshNotes();
       },
+      onNoteImport: (importXmlText: string) => {
+        NotesAPI.importNote(importXmlText);
+        this._refreshNotes();
+      },
+      onNoteExport: () => {
+        NotesAPI.exportNote();
+      },
       onNoteEdit: (title: Note['title'], body: Note['body']) => {
         if (!this.activeNote) {
           return;
