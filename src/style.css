@@ -1,16 +1,18 @@
 #app {
+  height: 100vh;
+  display: flex;
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
 }
 
 html,
 body {
   height: 100%;
   margin: 0;
+  padding: 0;
 }
 
 .notes {
@@ -30,14 +32,21 @@ body {
   width: 300px;
 }
 
+.notes__save,
+.notes__delete,
 .notes__add {
-  background: #009578;
   border: none;
   border-radius: 7px;
   color: #ffffff;
   cursor: pointer;
   font-size: 1.25em;
   font-weight: bold;
+  padding: 0.75em 0;
+  width: 100%;
+}
+
+.notes__add {
+  background: #009578;
   margin-bottom: 1em;
   padding: 0.75em 0;
   width: 100%;
@@ -81,9 +90,10 @@ body {
 }
 
 .notes__preview {
+  position: relative;
   display: flex;
   flex-direction: column;
-  padding: 2em 3em;
+  padding: 2em 3em 4em;
   flex-grow: 1;
 }
 
@@ -92,6 +102,35 @@ body {
   border: none;
   outline: none;
   width: 100%;
+}
+
+.notes__btns {
+  position: absolute;
+  right: 3em;
+  bottom: 0.5em;
+  display: flex;
+  z-index: 10;
+}
+
+.notes__save,
+.notes__delete {
+  padding: 0.5em 0;
+  width: 6em;
+  font-size: 1.1em;
+}
+.notes__save {
+  margin-right: 0.6em;
+  background-color: #409eff;
+}
+.notes__delete {
+  background-color: #f56c6c;
+}
+
+.notes__delete:hover {
+  background-color: #f78989;
+}
+.notes__save:hover {
+  background-color: #66b1ff;
 }
 
 .notes__title {
@@ -103,6 +142,6 @@ body {
   flex-grow: 1;
   font-size: 1.2em;
   line-height: 1.5;
-  margin-top: 2em;
+  margin-top: 0.8em;
   resize: none;
 }

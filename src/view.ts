@@ -42,11 +42,21 @@ export default class NotesView {
           <div class="notes__preview">
               <input class="notes__title" type="text" placeholder="新笔记...">
               <textarea class="notes__body">编辑笔记...</textarea>
+              <div class="notes__btns">
+                <button class="notes__save" type="button">保存</button>
+                <button class="notes__delete" type="button">删除</button>
+              </div>
           </div>
       `;
 
     const btnAddNote = this.root.querySelector(
       '.notes__add'
+    ) as HTMLButtonElement;
+    const btnSaveNote = this.root.querySelector(
+      '.notes__save'
+    ) as HTMLButtonElement;
+    const btnDeleteNote = this.root.querySelector(
+      '.notes__delete'
     ) as HTMLButtonElement;
     const inpTitle = this.root.querySelector(
       '.notes__title'
@@ -58,14 +68,14 @@ export default class NotesView {
     btnAddNote.addEventListener('click', () => {
       this.onNoteAdd();
     });
+    btnSaveNote.addEventListener('click', () => {
+      const updatedTitle = inpTitle.value.trim();
+      const updatedBody = inpBody.value.trim();
 
-    [inpTitle, inpBody].forEach((inputField) => {
-      inputField.addEventListener('blur', () => {
-        const updatedTitle = inpTitle.value.trim();
-        const updatedBody = inpBody.value.trim();
-
-        this.onNoteEdit(updatedTitle, updatedBody);
-      });
+      this.onNoteEdit(updatedTitle, updatedBody);
+    });
+    btnDeleteNote.addEventListener('click', () => {
+      this.removeNote();
     });
 
     this.updateNotePreviewVisibility(false);
@@ -128,15 +138,19 @@ export default class NotesView {
       });
 
       noteListItem.addEventListener('dblclick', () => {
-        const doDelete = confirm('确认要删除该笔记吗?');
-
-        if (doDelete) {
-          if (noteListItem.dataset.noteId) {
-            this.onNoteDelete(parseInt(noteListItem.dataset.noteId));
-          }
+        if (noteListItem.dataset.noteId) {
+          this.removeNote(parseInt(noteListItem.dataset.noteId));
         }
       });
     });
+  }
+
+  removeNote(noteId?: Note['id']) {
+    const doDelete = confirm('确认要删除该笔记吗?');
+
+    if (doDelete) {
+      this.onNoteDelete(noteId);
+    }
   }
 
   updateActiveNote(note: Note) {

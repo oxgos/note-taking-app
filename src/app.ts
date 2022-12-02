@@ -66,7 +66,13 @@ export default class App {
 
         this._refreshNotes();
       },
-      onNoteDelete: (noteId: Note['id']) => {
+      onNoteDelete: (noteId?: Note['id']) => {
+        if (!noteId) {
+          if (!this.activeNote) {
+            return;
+          }
+          noteId = this.activeNote.id;
+        }
         NotesAPI.deleteNote(noteId);
         this._refreshNotes();
       }
