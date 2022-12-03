@@ -1,4 +1,4 @@
-import { Note } from './interfaces/note';
+import { Note } from '../interfaces/note';
 import { XMLParser, XMLBuilder } from 'fast-xml-parser';
 
 export default class NotesAPI {
@@ -52,22 +52,27 @@ export default class NotesAPI {
 
   static exportNote() {
     const notes = NotesAPI.getAllNotes();
-    const builder = new XMLBuilder({
-      format: true
-    });
-    const xmlContent = builder.build({
-      notes: {
-        note: notes
-      }
-    });
-    const link = document.createElement('a');
-    link.style.display = 'none';
-    link.href = 'data:text/xml;charset=utf-8,' + encodeURIComponent(xmlContent);
-    const row = { fileName: `note_${+new Date()}.xml` };
-    link.setAttribute('download', row.fileName);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    if (notes.length > 0) {
+      const builder = new XMLBuilder({
+        format: true
+      });
+      const xmlContent = builder.build({
+        notes: {
+          note: notes
+        }
+      });
+      const link = document.createElement('a');
+      link.style.display = 'none';
+      link.href =
+        'data:text/xml;charset=utf-8,' + encodeURIComponent(xmlContent);
+      const row = { fileName: `note_${+new Date()}.xml` };
+      link.setAttribute('download', row.fileName);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else {
+      alert('没有任何笔记');
+    }
   }
 
   static deleteNote(id: Note['id']) {
