@@ -26,7 +26,7 @@ const App = () => {
     }
   };
 
-  const onNoteSelect = useCallback(
+  const onNoteSelect: onNoteSelect = useCallback(
     (noteId: Note['id']) => {
       const selectedNote = notes.find((note) => note.id === noteId);
 
@@ -37,7 +37,7 @@ const App = () => {
     [notes]
   );
 
-  const onNoteAdd = () => {
+  const onNoteAdd: onNoteAdd = () => {
     const newNote = {
       title: '新建笔记',
       body: '开始记录...'
@@ -47,16 +47,16 @@ const App = () => {
     refreshNotes();
   };
 
-  const onNoteImport = (importXmlText: string) => {
+  const onNoteImport: onNoteImport = (importXmlText: string) => {
     NotesAPI.importNote(importXmlText);
     refreshNotes();
   };
 
-  const onNoteExport = () => {
+  const onNoteExport: onNoteExport = () => {
     NotesAPI.exportNote();
   };
 
-  const onNoteEdit = useCallback(
+  const onNoteEdit: onNoteEdit = useCallback(
     (title: Note['title'], body: Note['body']) => {
       if (!title || !body) {
         alert('标题或者内容不能为空');
@@ -80,7 +80,7 @@ const App = () => {
     [activeNote]
   );
 
-  const onNoteDelete = useCallback(
+  const onNoteDelete: onNoteDelete = useCallback(
     (noteId?: Note['id']) => {
       if (!noteId) {
         if (!activeNote) {

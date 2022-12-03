@@ -31,7 +31,6 @@ export default class NotesAPI {
   static importNote(importXmlText: string) {
     const parser = new XMLParser();
     const jObj = parser.parse(importXmlText);
-    console.log(jObj);
     const newNotes: Note[] = jObj.notes.note;
     if (newNotes.length > 0) {
       const notes = NotesAPI.getAllNotes();

@@ -59,7 +59,6 @@ const NoteView: FC<NoteViewProps> = ({
       const reader = new FileReader();
       reader.onload = function fileReadCompleted() {
         if (reader.result) {
-          console.log(typeof reader.result);
           onNoteImport(reader.result as string);
           if (inputRef.current) {
             inputRef.current.value = '';
