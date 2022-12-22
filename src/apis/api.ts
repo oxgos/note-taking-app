@@ -1,6 +1,8 @@
 import { Note } from '../interfaces/note';
 import { XMLParser, XMLBuilder } from 'fast-xml-parser';
 
+type PartialSpecific<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+
 export default class NotesAPI {
   static getAllNotes() {
     const notes: Note[] = JSON.parse(
@@ -12,7 +14,7 @@ export default class NotesAPI {
     });
   }
 
-  static saveNote(noteToSave: Note) {
+  static saveNote(noteToSave: PartialSpecific<Note, 'id' | 'updated'>) {
     const notes = NotesAPI.getAllNotes();
     const existing = notes.find((note) => note.id === noteToSave.id);
     // Edit/Update
@@ -21,9 +23,12 @@ export default class NotesAPI {
       existing.body = noteToSave.body;
       existing.updated = new Date().toISOString();
     } else {
-      noteToSave.id = Math.floor(Math.random() * 1000000);
-      noteToSave.updated = new Date().toISOString();
-      notes.push(noteToSave);
+      const newNote: Note = {
+        ...noteToSave,
+        id: Math.floor(Math.random() * 1000000),
+        updated: new Date().toISOString()
+      };
+      notes.push(newNote);
     }
     localStorage.setItem('notesapp-notes', JSON.stringify(notes));
   }

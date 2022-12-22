@@ -66,13 +66,13 @@ const App = () => {
         NotesAPI.saveNote({
           title,
           body
-        } as Note);
+        });
       } else {
         NotesAPI.saveNote({
           id: activeNote.id,
           title,
           body
-        } as Note);
+        });
       }
 
       refreshNotes();
