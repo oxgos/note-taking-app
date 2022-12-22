@@ -4,7 +4,7 @@ import {
   useCallback,
   useEffect,
   useRef,
-  useState
+  useState,
 } from 'react';
 import {
   onNoteAdd,
@@ -12,7 +12,7 @@ import {
   onNoteEdit,
   onNoteExport,
   onNoteImport,
-  onNoteSelect
+  onNoteSelect,
 } from '../../App';
 import { Note } from '../../interfaces/note';
 
@@ -37,7 +37,7 @@ const NoteView: FC<NoteViewProps> = ({
   onNoteDelete,
   onNoteEdit,
   onNoteExport,
-  onNoteImport
+  onNoteImport,
 }) => {
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
@@ -133,7 +133,7 @@ const NoteView: FC<NoteViewProps> = ({
               <div className='notes__small-updated'>
                 {new Date(note.updated).toLocaleString(undefined, {
                   dateStyle: 'full',
-                  timeStyle: 'short'
+                  timeStyle: 'short',
                 })}
               </div>
             </div>

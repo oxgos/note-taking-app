@@ -26,7 +26,7 @@ export default class NotesAPI {
       const newNote: Note = {
         ...noteToSave,
         id: Math.floor(Math.random() * 1000000),
-        updated: new Date().toISOString()
+        updated: new Date().toISOString(),
       };
       notes.push(newNote);
     }
@@ -58,12 +58,12 @@ export default class NotesAPI {
     const notes = NotesAPI.getAllNotes();
     if (notes.length > 0) {
       const builder = new XMLBuilder({
-        format: true
+        format: true,
       });
       const xmlContent = builder.build({
         notes: {
-          note: notes
-        }
+          note: notes,
+        },
       });
       const link = document.createElement('a');
       link.style.display = 'none';

@@ -40,7 +40,7 @@ const App = () => {
   const onNoteAdd: onNoteAdd = () => {
     const newNote = {
       title: '新建笔记',
-      body: '开始记录...'
+      body: '开始记录...',
     };
 
     NotesAPI.saveNote(newNote as Note);
@@ -65,13 +65,13 @@ const App = () => {
       if (!activeNote) {
         NotesAPI.saveNote({
           title,
-          body
+          body,
         });
       } else {
         NotesAPI.saveNote({
           id: activeNote.id,
           title,
-          body
+          body,
         });
       }
 
